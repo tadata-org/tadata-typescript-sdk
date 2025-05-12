@@ -1,0 +1,9 @@
+dist
+node_modules
+coverage
+*.json
+*.yml
+*.yaml
+README.md
+LICENSE
+.gitignore 
