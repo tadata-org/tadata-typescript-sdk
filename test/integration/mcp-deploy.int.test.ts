@@ -70,7 +70,7 @@ describe('MCP Deploy Integration', () => {
       id: successResponse.id,
       url: successResponse.url,
       specVersion: successResponse.specVersion,
-      createdAt: new Date(successResponse.createdAt),
+      createdAt: successResponse.createdAt,
     });
   });
 

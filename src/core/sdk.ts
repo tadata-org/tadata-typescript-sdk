@@ -50,7 +50,11 @@ export interface TadataOptions {
  *   logger: pino(),          // optional
  * });
  *
- * const source = await OpenApiSource.fromFile('./acme-openapi.yaml');
+ * // Load from JSON file
+ * const source = await OpenApiSource.fromFile('./acme-openapi.json');
+ * // Or from JSON string or object
+ * // const source = OpenApiSource.fromJson(jsonString);
+ * // const source = OpenApiSource.fromObject(specObject);
  *
  * await tadata.mcp.deploy({
  *   spec: source,
@@ -76,7 +80,6 @@ export class TadataNodeSDK {
     const client = createApiClient(options.apiKey, {
       baseUrl: options.baseUrl,
       version: options.version,
-      retries: isDev ? 0 : 3,
       logger,
     });
 

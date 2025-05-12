@@ -1,4 +1,4 @@
-import { initClient } from '@ts-rest/core';
+import { initClient, ApiFetcherArgs } from '@ts-rest/core';
 import axios, { AxiosError } from 'axios';
 import { tadataContract } from './tadata-contract';
 import { AuthError, NetworkError, ApiError } from '../errors';
@@ -7,7 +7,6 @@ import { Logger } from '../core/logger';
 interface ClientOptions {
   baseUrl?: string;
   version?: string;
-  retries?: number;
   timeout?: number;
   logger?: Logger;
 }
@@ -19,7 +18,6 @@ export function createApiClient(apiKey: string, options: ClientOptions = {}) {
   const {
     baseUrl = 'https://api.tadata.com',
     version = 'latest',
-    retries = 3,
     timeout = 30000,
     logger,
   } = options;
@@ -67,9 +65,20 @@ export function createApiClient(apiKey: string, options: ClientOptions = {}) {
       'Authorization': `Bearer ${apiKey}`,
       'x-tadata-version': version,
     },
-    api: async ({ path, method, body, headers }) => {
+/* <<<<<<<<<<<<<<  ✨ Windsurf Command ⭐ >>>>>>>>>>>>>>>> */
+    /**
+     * Adapter for `ts-rest` to perform API requests to the Tadata API.
+     *
+     * @param {ApiFetcherArgs<any>} args - Request arguments with path, method, body, and headers.
+     * @returns {Promise<ApiResponse<any>>} - Response with status, body, and headers.
+     * @throws {AuthError} - If authentication fails.
+     * @throws {ApiError} - If the API returns an error response.
+     * @throws {NetworkError} - If a network error occurs.
+     */
+/* <<<<<<<<<<  5f3418b3-bf5f-4f26-b9b9-206215461c08  >>>>>>>>>>> */
+    api: async ({ path, method, body, headers }: ApiFetcherArgs<any>) => {
       try {
-        const config = {
+        const config: any = {
           url: path,
           method,
           headers,
@@ -79,54 +88,31 @@ export function createApiClient(apiKey: string, options: ClientOptions = {}) {
           config.data = body;
         }
 
-        let retryCount = 0;
-        let lastError = null;
+        try {
+          const response = await axiosInstance.request(config);
 
-        // Simple retry logic
-        while (retryCount < retries) {
-          try {
-            const response = await axiosInstance.request(config);
+          return {
+            status: response.status,
+            body: response.data,
+            headers: new Headers(response.headers as Record<string, string>),
+          };
+        } catch (error) {
+          const axiosError = error as AxiosError;
 
-            return {
-              status: response.status,
-              body: response.data,
-              headers: response.headers as Record<string, string>,
-            };
-          } catch (error) {
-            lastError = error as AxiosError;
-
-            if (!shouldRetry(lastError, retryCount)) {
-              break;
-            }
-
-            retryCount++;
-
-            if (logger) {
-              logger.warn(`Retrying request (${retryCount}/${retries})`);
-            }
-
-            // Exponential backoff: wait longer between each retry
-            await new Promise(resolve => setTimeout(resolve, 100 * Math.pow(2, retryCount)));
-          }
-        }
-
-        // Handle errors and translate to our domain errors
-        if (lastError) {
-          if (!lastError.response) {
-            throw new NetworkError('Network error occurred', lastError);
+          // Handle errors and translate to our domain errors
+          if (!axiosError.response) {
+            throw new NetworkError('Network error occurred', axiosError);
           }
 
-          const { status, data } = lastError.response;
+          const { status, data } = axiosError.response;
+          const errorMessage = typeof data === 'object' && data !== null ? (data as any).message : undefined;
 
           if (status === 401 || status === 403) {
-            throw new AuthError(data?.message || 'Authentication failed', lastError);
+            throw new AuthError(errorMessage || 'Authentication failed', axiosError);
           }
 
-          throw new ApiError(data?.message || `API error: ${status}`, status, data, lastError);
+          throw new ApiError(errorMessage || `API error: ${status}`, status, data, axiosError);
         }
-
-        // This shouldn't happen but satisfies TypeScript
-        throw new NetworkError('Unknown error occurred');
       } catch (error) {
         // Re-throw domain errors
         if (
@@ -142,23 +128,4 @@ export function createApiClient(apiKey: string, options: ClientOptions = {}) {
       }
     },
   });
-}
-
-// Helper function to determine if a request should be retried
-function shouldRetry(error: AxiosError, _retryCount: number): boolean {
-  // Don't retry client errors (except rate limiting)
-  if (error.response) {
-    const status = error.response.status;
-
-    if (status === 429) {
-      return true; // Always retry rate limiting
-    }
-
-    if (status >= 400 && status < 500) {
-      return false; // Don't retry other client errors
-    }
-  }
-
-  // Retry on network errors and server errors
-  return true;
 }

@@ -1,6 +1,5 @@
 import fs from 'fs/promises';
 import path from 'path';
-import yaml from 'yaml';
 import { SpecInvalidError } from '../errors';
 
 /**
@@ -24,17 +23,13 @@ export class OpenApiSource {
       const resolvedPath = path.resolve(filePath);
       const fileContent = await fs.readFile(resolvedPath, 'utf-8');
 
-      // Parse based on file extension
-      let parsed: unknown;
+      // Only support JSON files
       if (resolvedPath.endsWith('.json')) {
-        parsed = JSON.parse(fileContent);
-      } else if (resolvedPath.endsWith('.yaml') || resolvedPath.endsWith('.yml')) {
-        parsed = yaml.parse(fileContent);
+        const parsed = JSON.parse(fileContent);
+        return new OpenApiSource(parsed);
       } else {
-        throw new Error(`Unsupported file extension: ${path.extname(filePath)}`);
+        throw new Error(`Unsupported file extension: ${path.extname(filePath)}. Only JSON files are supported.`);
       }
-
-      return new OpenApiSource(parsed);
     } catch (error) {
       throw new SpecInvalidError(
         `Failed to read spec file: ${(error as Error).message}`,
@@ -57,91 +52,9 @@ export class OpenApiSource {
   }
 
   /**
-   * Creates an OpenApiSource from a YAML string
-   */
-  static fromYaml(yamlStr: string): OpenApiSource {
-    try {
-      const parsed = yaml.parse(yamlStr);
-      return new OpenApiSource(parsed);
-    } catch (error) {
-      throw new SpecInvalidError(`Invalid YAML: ${(error as Error).message}`, undefined, error);
-    }
-  }
-
-  /**
    * Creates an OpenApiSource from a plain JavaScript object
    */
   static fromObject(obj: Record<string, any>): OpenApiSource {
     return new OpenApiSource(obj);
-  }
-
-  /**
-   * Creates an OpenApiSource from an Express application
-   * This is a placeholder implementation. In a real implementation,
-   * you would use a library like swagger-jsdoc to generate an OpenAPI spec.
-   */
-  static fromExpress(app: any): OpenApiSource {
-    try {
-      // Validation that it's likely an Express app
-      if (typeof app?.use !== 'function' || typeof app?.listen !== 'function') {
-        throw new Error('Not a valid Express app');
-      }
-
-      // Here you would typically use swagger-jsdoc or similar to generate a spec
-      // This is a simplified placeholder implementation
-      const spec = {
-        openapi: '3.0.0',
-        info: {
-          title: 'Express API',
-          version: '1.0.0',
-        },
-        paths: {},
-      };
-
-      return new OpenApiSource(spec);
-    } catch (error) {
-      throw new SpecInvalidError(
-        `Failed to generate spec from Express app: ${(error as Error).message}`,
-        undefined,
-        error
-      );
-    }
-  }
-
-  /**
-   * Creates an OpenApiSource from a Fastify instance
-   * This is a placeholder implementation. In a real implementation,
-   * you would use Fastify's swagger method to generate an OpenAPI spec.
-   */
-  static fromFastify(fastify: any): OpenApiSource {
-    try {
-      // Validation that it's likely a Fastify instance
-      if (typeof fastify?.register !== 'function' || typeof fastify?.listen !== 'function') {
-        throw new Error('Not a valid Fastify instance');
-      }
-
-      // If Fastify has a swagger method, use it
-      if (typeof fastify.swagger === 'function') {
-        return new OpenApiSource(fastify.swagger());
-      }
-
-      // Fallback to a minimal spec
-      const spec = {
-        openapi: '3.0.0',
-        info: {
-          title: 'Fastify API',
-          version: '1.0.0',
-        },
-        paths: {},
-      };
-
-      return new OpenApiSource(spec);
-    } catch (error) {
-      throw new SpecInvalidError(
-        `Failed to generate spec from Fastify instance: ${(error as Error).message}`,
-        undefined,
-        error
-      );
-    }
   }
 }

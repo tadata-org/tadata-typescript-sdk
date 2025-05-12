@@ -1,12 +1,16 @@
-import { c, z } from '@ts-rest/core';
 
 // Schema definitions
+import { initContract } from '@ts-rest/core';
+import { z } from 'zod';
+
 const McpDeploymentSchema = z.object({
   id: z.string(),
   url: z.string(),
   specVersion: z.string(),
   createdAt: z.string().transform(str => new Date(str)),
 });
+
+const c = initContract();
 
 // API contract
 export const tadataContract = c.router({

@@ -27,8 +27,8 @@ const tadata = new TadataNodeSDK({
   logger: pino(),         // Optional: use custom logger
 });
 
-// Create an OpenAPI source from various formats
-const source = await OpenApiSource.fromFile('./acme-openapi.yaml');
+// Create an OpenAPI source from JSON file
+const source = await OpenApiSource.fromFile('./acme-openapi.json');
 
 // Deploy the MCP server
 const deployment = await tadata.mcp.deploy({
@@ -45,14 +45,11 @@ console.log(`Deployed MCP server: ${deployment.url}`);
 The SDK supports multiple ways to provide your OpenAPI specification:
 
 ```typescript
-// From a file (YAML or JSON)
-const source = await OpenApiSource.fromFile('./openapi.yaml');
+// From a JSON file
+const source = await OpenApiSource.fromFile('./openapi.json');
 
 // From a JSON string
 const source = OpenApiSource.fromJson(jsonString);
-
-// From a YAML string
-const source = OpenApiSource.fromYaml(yamlString);
 
 // From a JavaScript object
 const source = OpenApiSource.fromObject({
@@ -60,12 +57,6 @@ const source = OpenApiSource.fromObject({
   info: { title: 'Example API', version: '1.0.0' },
   paths: { /* ... */ }
 });
-
-// From an Express application
-const source = OpenApiSource.fromExpress(app);
-
-// From a Fastify instance
-const source = OpenApiSource.fromFastify(fastifyApp);
 ```
 
 ## Error Handling
