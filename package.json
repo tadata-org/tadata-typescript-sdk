@@ -1,7 +1,7 @@
 {
-  "name": "@tadata/node-sdk",
+  "name": "@tadata/sdk",
   "version": "0.1.0",
-  "description": "A fluent SDK for working with Tadata's API",
+  "description": "Tadata Node SDK",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
@@ -17,15 +17,13 @@
     "LICENSE",
     "README.md"
   ],
-  "sideEffects": false,
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "npx rimraf dist",
     "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:types",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
-    "build:esm": "tsc -p tsconfig.esm.json",
-    "build:types": "tsc -p tsconfig.types.json",
-    "dev": "ts-node src/dev.ts",
-    "test": "jest",
+    "build:cjs": "npx tsc -p tsconfig.cjs.json",
+    "build:esm": "npx tsc -p tsconfig.esm.json",
+    "build:types": "npx tsc -p tsconfig.types.json",
+    "test": "npx jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint . --ext .ts",
@@ -47,6 +45,8 @@
     "@apidevtools/swagger-parser": "^10.1.0",
     "@ts-rest/core": "^3.30.5",
     "axios": "^1.6.2",
+    "http-status-codes": "^2.3.0",
+    "openapi-typescript": "^7.8.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

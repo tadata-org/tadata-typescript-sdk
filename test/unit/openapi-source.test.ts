@@ -1,6 +1,6 @@
 import { OpenApiSource } from '../../src';
-import fs from 'fs/promises';
-import path from 'path';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { SpecInvalidError } from '../../src';
 
 // Create test directory and files before tests
@@ -40,7 +40,7 @@ const sampleSpec = {
   },
 };
 
-describe('OpenApiSource', () => {
+describe('OpenApiSource Integration Test', () => {
   // Set up test files
   beforeAll(async () => {
     try {
@@ -120,14 +120,12 @@ describe('OpenApiSource', () => {
     it('throws SpecInvalidError for unsupported file extension', async () => {
       // Create a path with an unsupported extension
       const unsupportedPath = path.join(testDir, 'test-spec.txt');
-      
+
       // Write some content to the file
       await fs.writeFile(unsupportedPath, 'Not a valid spec file');
-      
+
       // Attempt to create a source from a file with unsupported extension
-      await expect(OpenApiSource.fromFile(unsupportedPath)).rejects.toThrow(
-        SpecInvalidError
-      );
+      await expect(OpenApiSource.fromFile(unsupportedPath)).rejects.toThrow(SpecInvalidError);
     });
   });
 });

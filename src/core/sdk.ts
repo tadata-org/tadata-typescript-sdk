@@ -1,5 +1,5 @@
 import { createApiClient } from '../contract';
-import { McpResource } from '../mcp';
+import { McpResource } from '../resources/mcp';
 import { Logger, createDefaultLogger } from './logger';
 
 /**
@@ -28,12 +28,6 @@ export interface TadataOptions {
    * @default ConsoleLogger
    */
   logger?: Logger;
-
-  /**
-   * Custom base URL for the API
-   * @default https://api.tadata.com
-   */
-  baseUrl?: string;
 }
 
 /**
@@ -66,24 +60,22 @@ export class TadataNodeSDK {
   /**
    * MCP resource for deploying and managing Multi-Channel Proxies
    */
-  readonly mcp: McpResource;
-
+  public readonly mcp: McpResource;
   /**
    * Create a new Tadata Node SDK instance
    */
   constructor(options: TadataOptions) {
-    // Initialize dependencies
     const logger = options.logger || createDefaultLogger();
     const isDev = options.dev || false;
+    const baseUrl = isDev ? 'https://api.stage.tadata.com' : 'https://api.tadata.com';
 
-    // Create API client
     const client = createApiClient(options.apiKey, {
-      baseUrl: options.baseUrl,
-      version: options.version,
+      baseUrl,
+      version: options.version || 'latest',
       logger,
+      isDev,
     });
 
-    // Initialize resources
-    this.mcp = new McpResource(client, logger, isDev);
+    this.mcp = new McpResource(client.deployments, logger);
   }
 }

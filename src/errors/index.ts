@@ -1,7 +1,9 @@
+import { StatusCodes } from 'http-status-codes';
+
 /**
  * Base error class for all Tadata SDK errors
  */
-export class TadataError extends Error {
+export class TadataSDKError extends Error {
   constructor(
     readonly message: string,
     readonly code: string,
@@ -9,7 +11,7 @@ export class TadataError extends Error {
     readonly cause?: Error | unknown
   ) {
     super(message);
-    this.name = 'TadataError';
+    this.name = 'TadataSDKError';
 
     // Maintain proper stack trace for where error was thrown
     if (Error.captureStackTrace) {
@@ -21,9 +23,9 @@ export class TadataError extends Error {
 /**
  * Error thrown when the OpenAPI specification is invalid
  */
-export class SpecInvalidError extends TadataError {
+export class SpecInvalidError extends TadataSDKError {
   constructor(message: string, details?: unknown, cause?: Error | unknown) {
-    super(message, 'spec_invalid', 400, cause);
+    super(message, 'spec_invalid', StatusCodes.BAD_REQUEST, cause);
     this.name = 'SpecInvalidError';
     this.details = details;
   }
@@ -34,9 +36,9 @@ export class SpecInvalidError extends TadataError {
 /**
  * Error thrown when authentication fails
  */
-export class AuthError extends TadataError {
+export class AuthError extends TadataSDKError {
   constructor(message = 'Authentication failed', cause?: Error | unknown) {
-    super(message, 'auth_error', 401, cause);
+    super(message, 'auth_error', StatusCodes.UNAUTHORIZED, cause);
     this.name = 'AuthError';
   }
 }
@@ -44,7 +46,7 @@ export class AuthError extends TadataError {
 /**
  * Error thrown for API errors
  */
-export class ApiError extends TadataError {
+export class ApiError extends TadataSDKError {
   constructor(
     message: string,
     statusCode: number,
@@ -59,7 +61,7 @@ export class ApiError extends TadataError {
 /**
  * Error thrown for network-related failures
  */
-export class NetworkError extends TadataError {
+export class NetworkError extends TadataSDKError {
   constructor(message: string, cause?: Error | unknown) {
     super(message, 'network_error', undefined, cause);
     this.name = 'NetworkError';

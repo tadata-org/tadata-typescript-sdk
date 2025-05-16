@@ -1,14 +1,17 @@
-// Main SDK class and types
-export { TadataNodeSDK, type TadataOptions } from './core/sdk';
+// Export resources
+export * from './resources';
 
-// Error types for error handling
-export { TadataError, SpecInvalidError, AuthError, ApiError, NetworkError } from './errors';
+// Core exports
+export * from './core/sdk';
+export * from './core/logger';
 
-// OpenAPI source for working with specifications
-export { OpenApiSource } from './openapi';
+// Error exports
+export * from './errors';
 
-// MCP resources and types
-export { type McpDeploymentResult, type McpDeployInput } from './mcp';
+// OpenAPI exports
+export * from './openapi';
 
-// Logger interface for custom loggers
-export { type Logger } from './core/logger';
+// HTTP exports
+export * from './http/contracts';
+export * from './http/schemas/error.schema';
+export * from './http/schemas/response.schema';
