@@ -67,7 +67,10 @@ export class TadataNodeSDK {
   constructor(options: TadataOptions) {
     const logger = options.logger || createDefaultLogger();
     const isDev = options.dev || false;
-    const baseUrl = isDev ? 'https://api.stage.tadata.com' : 'https://api.tadata.com';
+
+    // Always use http://localhost:3000 as the baseUrl
+    // This is a requirement for the current implementation
+    const baseUrl = 'http://localhost:3000';
 
     const client = createApiClient(options.apiKey, {
       baseUrl,

@@ -5,7 +5,7 @@ import { OpenApiSource } from '../../openapi';
  */
 export interface McpDeployInput {
   spec: OpenApiSource;
-  specBaseUrl: string;
+  specBaseUrl?: string;
   name?: string;
 }
 

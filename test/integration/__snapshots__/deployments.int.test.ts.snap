@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Deployments Integration Test (Nock) when deploying an OpenAPI spec should throw ApiError for not found errors (404) 1`] = `"Deployment not found"`;
+
+exports[`Deployments Integration Test (Nock) when deploying an OpenAPI spec should throw ApiError for server errors (e.g., 500) 1`] = `"Internal mock server error occurred"`;
+
+exports[`Deployments Integration Test (Nock) when deploying an OpenAPI spec should throw AuthError when using invalid API key 1`] = `"Invalid API key from mock"`;
+
+exports[`Deployments Integration Test (Nock) when deploying an OpenAPI spec should throw SpecInvalidError for backend validation failures 1`] = `"Invalid OpenAPI specification from backend"`;
+
+exports[`Deployments Integration Test (Nock) when deploying an OpenAPI spec should throw SpecInvalidError for malformed request body 1`] = `"Validation error"`;

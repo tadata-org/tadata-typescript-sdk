@@ -1,5 +1,5 @@
 import { initContract } from '@ts-rest/core';
-import { HttpStatusCode } from 'axios';
+import { StatusCodes } from 'http-status-codes';
 import { z } from 'zod';
 import {
   createApiResponseSchema,
@@ -9,10 +9,10 @@ import {
 
 const contract = initContract();
 
-const ErrorResponseBadRequest = createApiResponseSchema(z.null());
+const ErrorResponse400 = createApiResponseSchema(z.null());
+const ErrorResponseNotFound = createApiResponseSchema(z.null());
+const ErrorResponse500 = createApiResponseSchema(z.null());
 const ErrorResponseUnauthorized = createApiResponseSchema(z.null());
-const ErrorResponseForbidden = createApiResponseSchema(z.null());
-const ErrorResponseInternalServerError = createApiResponseSchema(z.null());
 
 export const deploymentsContract = contract.router({
   upsertFromOpenApi: {
@@ -20,12 +20,11 @@ export const deploymentsContract = contract.router({
     path: '/api/deployments/from-openapi',
     body: UpsertDeploymentBodySchema,
     responses: {
-      [HttpStatusCode.Ok]: UpsertDeploymentResponseSchema, // Success with response envelope
-      [HttpStatusCode.Created]: UpsertDeploymentResponseSchema, // Created with response envelope
-      [HttpStatusCode.BadRequest]: ErrorResponseBadRequest, // Validation error
-      [HttpStatusCode.Unauthorized]: ErrorResponseUnauthorized, // Auth error
-      [HttpStatusCode.Forbidden]: ErrorResponseForbidden, // Permission error
-      [HttpStatusCode.InternalServerError]: ErrorResponseInternalServerError, // Internal server error
+      [StatusCodes.CREATED]: UpsertDeploymentResponseSchema, // Created with response envelope
+      [StatusCodes.BAD_REQUEST]: ErrorResponse400, // Validation error
+      [StatusCodes.NOT_FOUND]: ErrorResponseNotFound, // Not found error
+      [StatusCodes.INTERNAL_SERVER_ERROR]: ErrorResponse500, // Internal server error
+      [StatusCodes.UNAUTHORIZED]: ErrorResponseUnauthorized, // Auth error handled by middleware
     },
     summary: 'Upsert a deployment from an OpenAPI specification',
   },

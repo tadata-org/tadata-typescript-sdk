@@ -27,7 +27,6 @@ interface CustomApiFetcherArgs {
 export function createApiClient(apiKey: string, options: ClientOptions) {
   const { baseUrl, version, timeout = 30000, logger } = options;
 
-  // Create axios instance with defaults
   const axiosInstance = axios.create({
     baseURL: baseUrl,
     timeout,
@@ -49,7 +48,7 @@ export function createApiClient(apiKey: string, options: ClientOptions) {
         // Format error for cleaner logs
         const errorInfo = {
           message: error.message,
-          code: error.code
+          code: error.code,
         };
         logger.error('Request error', errorInfo);
         return Promise.reject(error);
@@ -63,27 +62,26 @@ export function createApiClient(apiKey: string, options: ClientOptions) {
       },
       error => {
         // Format error for cleaner logs
-        let errorInfo: Record<string, any> = {
+        const errorInfo: Record<string, any> = {
           message: error.message,
-          code: error.code
+          code: error.code,
         };
-        
+
         if (error.response) {
           errorInfo.status = error.response.status;
-          
+
           // Extract specific error details
           if (error.response.data && error.response.data.error) {
             errorInfo.errorCode = error.response.data.error.code;
             errorInfo.errorMessage = error.response.data.error.message;
-            
+
             // Include first validation error if present
-            if (error.response.data.error.errors && 
-                error.response.data.error.errors.length > 0) {
+            if (error.response.data.error.errors && error.response.data.error.errors.length > 0) {
               errorInfo.validation = error.response.data.error.errors[0];
             }
           }
         }
-        
+
         logger.error('Response error', errorInfo);
         return Promise.reject(error);
       }
@@ -147,14 +145,21 @@ export function createApiClient(apiKey: string, options: ClientOptions) {
           }
 
           const { status, data } = axiosError.response;
-          const errorMessage =
-            typeof data === 'object' && data !== null ? (data as any).message : undefined;
+
+          // Extract error details from the standardized response envelope
+          // The server returns: { ok: false, status: number, error: { code, message, errors?, details? } }
+          const errorResponse = data as any;
+          const errorDetails = errorResponse?.error || {};
+
+          const errorMessage = errorDetails.message || `API error: ${status}`;
 
           if (status === 401 || status === 403) {
             throw new AuthError(errorMessage || 'Authentication failed', axiosError);
           }
 
-          throw new ApiError(errorMessage || `API error: ${status}`, status, data, axiosError);
+          // For all other errors, throw ApiError with the full response
+          // Higher-level SDK code can inspect this and throw more specific errors
+          throw new ApiError(errorMessage, status, errorResponse, axiosError);
         }
       } catch (error) {
         // Re-throw domain errors

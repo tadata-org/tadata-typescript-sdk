@@ -1,18 +1,23 @@
 import { ClientArgs, InitClientReturn } from '@ts-rest/core';
 import { StatusCodes } from 'http-status-codes';
+import { z } from 'zod';
 import { Logger } from '../../core/logger';
-import { ApiError, SpecInvalidError, AuthError } from '../../errors';
+import { ApiError, SpecInvalidError } from '../../errors';
 import { deploymentsContract } from '../../http/contracts';
 import { OpenApi3Schema } from '../../http/schemas';
-import { z } from 'zod';
 import { McpDeployInput, McpDeploymentResult } from './types';
 
 interface DeploymentSuccessResponse {
   ok: true;
   data: {
+    updated: boolean;
     deployment: {
       id: string;
-      url: string;
+      name: string;
+      url?: string; // URL is optional in the server response
+      specVersion?: string; // specVersion is optional in the server response
+      createdAt?: string;
+      updatedAt?: string;
     };
   };
 }
@@ -60,21 +65,22 @@ export class McpResource {
       // No need to pass apiKey as it's automatically added by the client
       const response = await this.client.upsertFromOpenApi({
         body: {
-          openapiSpec,
-          serviceName: input.name,
-          version: '1.0.0', // Add proper versioning parameter
+          openApiSpec: openapiSpec,
+          name: input.name,
+          baseUrl: input.specBaseUrl,
         },
       });
 
-      // For successful response, transform to expected McpDeploymentResult format
       if (isDeploymentResponse(response.body) && response.body.ok) {
         const deploymentData = response.body.data.deployment;
 
         return {
           id: deploymentData.id,
-          url: deploymentData.url,
-          specVersion: '1.0.0', // Use appropriate version from response when available
-          createdAt: new Date(), // Use appropriate timestamp from response when available
+          // Provide a default value for specVersion if undefined
+          specVersion: deploymentData.specVersion || '1.0.0',
+          // Provide a default URL value (required by type) if not returned from server
+          url: deploymentData.url || `http://localhost:3000/mcp/${deploymentData.id}`,
+          createdAt: deploymentData.createdAt ? new Date(deploymentData.createdAt) : new Date(),
         };
       }
 
@@ -116,24 +122,24 @@ export class McpResource {
  */
 function formatErrorForLogging(error: unknown): Record<string, any> {
   if (!error) return { type: 'unknown' };
-  
+
   // Handle ApiError
   if (error instanceof ApiError) {
     const result: Record<string, any> = {
       type: 'ApiError',
       message: error.message,
       code: error.code,
-      statusCode: error.statusCode
+      statusCode: error.statusCode,
     };
-    
+
     // Extract response body if available
     if (error.body) {
-      if (typeof error.body === 'object' && error.body !== null) {
+      if (typeof error.body === 'object') {
         const body = error.body as any;
         if (body.error) {
           result.errorCode = body.error.code;
           result.errorMessage = body.error.message;
-          
+
           // Include first validation error if present
           if (body.error.errors && body.error.errors.length > 0) {
             result.validation = body.error.errors[0];
@@ -141,22 +147,22 @@ function formatErrorForLogging(error: unknown): Record<string, any> {
         }
       }
     }
-    
+
     return result;
   }
-  
+
   // Handle AuthError
   if (error instanceof Error) {
     return {
       type: error.constructor.name,
       message: error.message,
-      code: (error as any).code
+      code: (error as any).code,
     };
   }
-  
+
   // Unknown error type
-  return { 
+  return {
     type: 'unknown',
-    error: String(error)
+    error: String(error),
   };
 }

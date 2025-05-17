@@ -3,10 +3,16 @@ import { createApiResponseSchema } from './response.schema';
 
 export const DeploymentResponseMinSchema = z.object({
   id: z.string(),
-  name: z.string(),
-  url: z.string(), // Added from existing McpDeploymentSchema
-  // specVersion: z.string(), // Consider if this is needed for 'Min' schema
-  // createdAt: z.date(), // Consider if this is needed for 'Min' schema
+  createdAt: z
+    .union([z.string(), z.date()])
+    .transform(val => (val instanceof Date ? val.toISOString() : val))
+    .optional(),
+  createdBy: z.string(),
+  updatedBy: z.string(),
+  mcpServerId: z.string(),
+  openAPISpecHash: z.string(),
+  mcpSpecHash: z.string(),
+  status: z.string(),
 });
 
 // Define a Zod schema for OpenAPI 3.0 with basic validation
@@ -23,16 +29,10 @@ export const OpenApi3Schema = z
   })
   .passthrough();
 
-// Assuming UpsertMCPServerFromOpenAPISchema is defined elsewhere
-// For now, let's define a placeholder based on the description
 export const UpsertDeploymentBodySchema = z.object({
-  // Updated to use the OpenApi3Schema
-  openapiSpec: OpenApi3Schema,
-  serviceName: z.string().optional(), // Corresponds to 'name' in mcpDeploy body
-  // 'version' from the plan doesn't directly map to mcpDeploy, adding as optional
-  version: z.string().optional(),
-  // 'baseUrl' from mcpDeploy body doesn't seem to be in the plan's subset, omitting for now
-  // 'dev' from mcpDeploy body doesn't seem to be in the plan's subset, omitting for now
+  openApiSpec: OpenApi3Schema,
+  name: z.string().optional(),
+  baseUrl: z.string().optional(),
 });
 
 // Original unwrapped response schema
