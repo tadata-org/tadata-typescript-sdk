@@ -1,8 +1,9 @@
-name: PR Semantics
+name: Pull Request Semantics
 
 on:
   pull_request:
-    types: [opened, edited, reopened, synchronize]
+    branches:
+      - master
 
 jobs:
   semantics:
@@ -23,11 +24,10 @@ jobs:
             extends: ['@commitlint/config-angular'], \
             rules: { \
               'subject-empty': [2, 'never'], \
-              'scope-empty'  : [2, 'never'], \
-              'type-case'    : [2, 'always', 'lower-case'], \
-              'type-empty'   : [2, 'never'], \
-              'type-enum'    : [2, 'always', ['chore','feat','fix','refactor']], \
-              'scope-enum'   : [2, 'always', ['openapi']] \
+              'scope-empty': [0, 'never'], \
+              'type-case': [2, 'always', 'lower-case'], \
+              'type-empty': [2, 'never'], \
+              'type-enum': [2, 'always', ['chore','feat','fix','refactor']] \
             } \
           };" > commitlint.config.js
 
@@ -35,9 +35,3 @@ jobs:
         if: ${{ steps.pull-request.outputs.pr_found == 'true' }}
         run: |
           echo "${{ steps.pull-request.outputs.pr_title }}" | npx commitlint
-
-      - name: Get Semantic Commit Scope
-        if: ${{ steps.pull-request.outputs.pr_found == 'true' }}
-        id: scope
-        run: |
-          echo "name=$(echo '${{ steps.pull-request.outputs.pr_title }}' | cut -d'(' -f1)" >> $GITHUB_OUTPUT 

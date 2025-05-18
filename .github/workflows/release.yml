@@ -1,12 +1,10 @@
 name: Release
 
 on:
-  workflow_dispatch:           # manual trigger
-  push:
-    branches: [master]   # assumes your main branch is master
+  workflow_dispatch:
 
 concurrency:
-  group: release               # never run two releases in parallel
+  group: release
   cancel-in-progress: true
 
 jobs:
@@ -21,10 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0       # semantic-release needs full history & tags
-          persist-credentials: false  # use GitHub token with correct permissions
+          fetch-depth: 0
+          persist-credentials: false
 
-      # -------- pnpm + node (same cache strategy used in CI) ----
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -35,15 +32,13 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # (optional) run tests / build again for extra safety
       - run: pnpm run test
+
       - run: pnpm run build
 
-      # -------- install semantic-release and plugins --------
       - name: Install semantic-release
         run: pnpm add -D semantic-release @semantic-release/changelog @semantic-release/git conventional-changelog-conventionalcommits
 
-      # -------- run release --------
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
