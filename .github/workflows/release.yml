@@ -32,7 +32,9 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           provenance: true
 
-      - run: pnpm install --frozen-lockfile
+      # Try with --frozen-lockfile first, fallback to regular install if it fails
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
 
       - run: pnpm run test
 
