@@ -4,20 +4,47 @@ import type { OpenAPI3 } from 'openapi-typescript';
 import { SpecInvalidError } from '../errors';
 
 /**
- * Class for handling different sources of OpenAPI specifications
+ * Represents a source for an OpenAPI specification.
+ * This class provides factory methods to create an OpenAPI source from various inputs
+ * like a file, a JSON string, or a JavaScript object.
+ * It handles parsing and basic validation of the OpenAPI document.
+ *
+ * @since 0.1.0
  */
 export class OpenApiSource {
   private constructor(private readonly rawSpec: OpenAPI3) {}
 
   /**
-   * Returns the raw specification object
+   * Returns the raw, parsed OpenAPI specification object.
+   * This object conforms to the OpenAPI3 interface.
+   *
+   * @returns The OpenAPI specification as a JavaScript object.
+   * @see {@link https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md|OpenAPI 3.0.3 Specification}
    */
   getRawSpec(): OpenAPI3 {
     return this.rawSpec;
   }
 
   /**
-   * Creates an OpenApiSource from a file
+   * Creates an `OpenApiSource` instance from a local JSON file path.
+   * The file must be a valid OpenAPI 3.x specification in JSON format.
+   *
+   * @param filePath The absolute or relative path to the OpenAPI JSON file.
+   * @returns A promise that resolves to an `OpenApiSource` instance.
+   * @throws {SpecInvalidError} If the file cannot be read, is not valid JSON,
+   * or does not conform to the OpenAPI 3.x specification structure.
+   * @example
+   * \`\`\`typescript
+   * async function loadSpec() {
+   *   try {
+   *     const source = await OpenApiSource.fromFile('./path/to/your/openapi.json');
+   *     console.log('Successfully loaded spec:', source.getRawSpec().info.title);
+   *   } catch (error) {
+   *     console.error('Failed to load OpenAPI spec from file:', error);
+   *   }
+   * }
+   * loadSpec();
+   * \`\`\`
    */
   static async fromFile(filePath: string): Promise<OpenApiSource> {
     try {
@@ -47,7 +74,27 @@ export class OpenApiSource {
   }
 
   /**
-   * Creates an OpenApiSource from a JSON string
+   * Creates an `OpenApiSource` instance from a JSON string.
+   * The string must represent a valid OpenAPI 3.x specification.
+   *
+   * @param jsonStr A string containing the OpenAPI specification in JSON format.
+   * @returns An `OpenApiSource` instance.
+   * @throws {SpecInvalidError} If the string is not valid JSON or does not conform
+   * to the OpenAPI 3.x specification structure.
+   * @example
+   * \`\`\`typescript
+   * const specJson = '{
+   *   "openapi": "3.0.0",
+   *   "info": { "title": "My API", "version": "1.0.0" },
+   *   "paths": {}
+   * }';
+   * try {
+   *   const source = OpenApiSource.fromJson(specJson);
+   *   console.log('Successfully loaded spec:', source.getRawSpec().info.title);
+   * } catch (error) {
+   *   console.error('Failed to load OpenAPI spec from JSON string:', error);
+   * }
+   * \`\`\`
    */
   static fromJson(jsonStr: string): OpenApiSource {
     try {
@@ -63,7 +110,26 @@ export class OpenApiSource {
   }
 
   /**
-   * Creates an OpenApiSource from a plain JavaScript object
+   * Creates an `OpenApiSource` instance from a plain JavaScript object.
+   * The object must conform to the OpenAPI 3.x specification structure.
+   *
+   * @param obj A JavaScript object representing the OpenAPI specification.
+   * @returns An `OpenApiSource` instance.
+   * @throws {SpecInvalidError} If the object does not conform to the OpenAPI 3.x specification structure.
+   * @example
+   * \`\`\`typescript
+   * const specObject = {
+   *   openapi: '3.0.0',
+   *   info: { title: 'My API from Object', version: '1.0.0' },
+   *   paths: {}
+   * };
+   * try {
+   *   const source = OpenApiSource.fromObject(specObject);
+   *   console.log('Successfully loaded spec:', source.getRawSpec().info.title);
+   * } catch (error) {
+   *   console.error('Failed to load OpenAPI spec from object:', error);
+   * }
+   * \`\`\`
    */
   static fromObject(obj: Record<string, any>): OpenApiSource {
     // Validate basic OpenAPI structure

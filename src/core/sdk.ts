@@ -1,76 +1,91 @@
 import { createApiClient } from '../contract';
 import { McpResource } from '../resources/mcp';
-import { Logger, createDefaultLogger } from './logger';
+import { createDefaultLogger, Logger } from './logger';
 
 /**
- * Options for initializing the Tadata Node SDK
+ * Options for initializing the Tadata Node SDK.
+ * These settings configure the behavior of the SDK client.
+ *
+ * @since 0.1.0
  */
 export interface TadataOptions {
   /**
-   * API key for authentication
+   * Your Tadata API key. This is required for authentication.
+   * You can obtain an API key from the Tadata dashboard.
    */
   apiKey: string;
 
   /**
-   * Whether to use development mode (sandbox)
+   * Specifies whether to use the development mode (sandbox environment).
+   * Set to `true` to use the sandbox for testing purposes.
    * @default false
    */
   dev?: boolean;
 
   /**
-   * API version to use
-   * @default latest
+   * The API version to use for requests.
+   * It's recommended to use a specific version for stability.
+   * @default ApiVersion.LATEST
    */
-  version?: string;
-
+  version?: '05-2025' | 'latest';
   /**
-   * Custom logger instance
+   * A custom logger instance that conforms to the {@link Logger} interface.
+   * If not provided, a default console logger (`ConsoleLogger`) will be used.
+   * This allows you to integrate SDK logging with your application's logging solution.
    * @default ConsoleLogger
    */
   logger?: Logger;
 }
 
 /**
- * Main class for the Tadata Node SDK
+ * The main class for interacting with the Tadata API.
+ * This class provides access to various Tadata resources and functionalities.
  *
+ * @since 0.1.0
  * @example
- * ```typescript
- * import { TadataNodeSDK, OpenApiSource } from '@tadata/node-sdk';
+ * \`\`\`typescript
+ * import { TadataNodeSDK, ApiVersion } from '@tadata/node-sdk';
+ * // Assumes pino is installed for custom logging, otherwise default logger is used.
+ * // import pino from 'pino';
  *
  * const tadata = new TadataNodeSDK({
  *   apiKey: process.env.TADATA_KEY!,
  *   dev: process.env.NODE_ENV !== 'production',
- *   version: '10-10-2024',
- *   logger: pino(),          // optional
+ *   version: ApiVersion.V_05_2025, // Optional: Defaults to ApiVersion.LATEST
+ *   // logger: pino(),             // Optional: Provide a custom logger
  * });
  *
- * // Load from JSON file
- * const source = await OpenApiSource.fromFile('./acme-openapi.json');
- * // Or from JSON string or object
- * // const source = OpenApiSource.fromJson(jsonString);
- * // const source = OpenApiSource.fromObject(specObject);
+ * async function main() {
+ *   // Example usage (assuming OpenApiSource and MCP deployment)
+ *   // const source = await OpenApiSource.fromFile('./my-api-spec.json');
+ *   // const deployment = await tadata.mcp.deploy({
+ *   //   spec: source,
+ *   //   specBaseUrl: 'https://api.example.com',
+ *   //   name: 'My API Proxy'
+ *   // });
+ *   // console.log('Deployment URL:', deployment.url);
+ * }
  *
- * await tadata.mcp.deploy({
- *   spec: source,
- *   specBaseUrl: 'https://acme.com/api',
- * });
- * ```
+ * main().catch(console.error);
+ * \`\`\`
  */
 export class TadataNodeSDK {
   /**
-   * MCP resource for deploying and managing Multi-Channel Proxies
+   * Access to Model Context Protocol (MCP) functionalities.
+   * Use this resource to deploy and manage your Model Context Protocol instances.
+   * @readonly
    */
   public readonly mcp: McpResource;
+
   /**
-   * Create a new Tadata Node SDK instance
+   * Creates a new instance of the TadataNodeSDK.
+   *
+   * @param options Configuration options for the SDK. See {@link TadataOptions}.
    */
   constructor(options: TadataOptions) {
     const logger = options.logger || createDefaultLogger();
     const isDev = options.dev || false;
-
-    // Always use http://localhost:3000 as the baseUrl
-    // This is a requirement for the current implementation
-    const baseUrl = 'http://localhost:3000';
+    const baseUrl = isDev ? 'https://api.stage.tadata.com' : 'https://api.tadata.com';
 
     const client = createApiClient(options.apiKey, {
       baseUrl,

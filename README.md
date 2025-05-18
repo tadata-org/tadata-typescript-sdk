@@ -1,6 +1,6 @@
 # Tadata Node SDK
 
-A Node.js SDK for deploying MCP (Multi-Channel Proxy) servers with your OpenAPI specifications.
+A Node.js SDK for deploying Model Context Protocol (MCP) servers with your OpenAPI specifications.
 
 ## Installation
 
@@ -14,16 +14,16 @@ pnpm add @tadata/node-sdk
 
 ## Quickstart
 
-Deploy an MCP server with your OpenAPI specification:
+Deploy a Model Context Protocol (MCP) server with your OpenAPI specification:
 
 ```typescript
-import { TadataNodeSDK, OpenApiSource } from '@tadata/node-sdk';
+import { TadataNodeSDK, OpenApiSource, ApiVersion } from '@tadata/node-sdk';
 
 // Initialize the SDK
 const tadata = new TadataNodeSDK({
   apiKey: process.env.TADATA_KEY!,
   dev: process.env.NODE_ENV !== 'production',
-  version: '10-10-2024',  // Optional: specify API version
+  version: ApiVersion.V_05_2025,  // Optional: specify API version
   logger: pino(),         // Optional: use custom logger
 });
 
@@ -37,7 +37,7 @@ const deployment = await tadata.mcp.deploy({
   name: 'Acme API',  // Optional
 });
 
-console.log(`Deployed MCP server: ${deployment.url}`);
+console.log(`Deployed Model Context Protocol (MCP) server: ${deployment.url}`);
 ```
 
 ## OpenAPI Source Formats

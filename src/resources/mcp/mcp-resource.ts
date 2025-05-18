@@ -33,8 +33,10 @@ interface DeploymentErrorResponse {
 type DeploymentResponse = DeploymentSuccessResponse | DeploymentErrorResponse;
 
 /**
- * Class for interacting with MCP resources
+ * Class for interacting with Model Context Protocol (MCP) resources.
  * This serves as a user-friendly interface that hides the REST contract details
+ *
+ * @since 0.1.0
  */
 export class McpResource {
   constructor(
@@ -43,11 +45,38 @@ export class McpResource {
   ) {}
 
   /**
-   * Deploy an MCP server from an OpenAPI specification
+   * Deploys a Model Context Protocol (MCP) server using an OpenAPI specification.
    * This provides an intuitive API that hides the underlying REST contract
+   *
+   * @param input The deployment configuration, including the OpenAPI specification and other optional parameters.
+   *              See {@link McpDeployInput}.
+   * @returns A promise that resolves to an {@link McpDeploymentResult} object containing details of the deployment.
+   * @throws {SpecInvalidError} If the provided OpenAPI specification is invalid.
+   * @throws {ApiError} If the Tadata API returns an error during deployment.
+   * @throws {AuthError} If authentication with the Tadata API fails.
+   * @throws {NetworkError} If a network issue prevents communication with the Tadata API.
+   * @example
+   * \`\`\`typescript
+   * // Assuming 'tadata' is an initialized TadataNodeSDK instance
+   * // and 'source' is an OpenApiSource instance
+   * async function deployMcp() {
+   *   try {
+   *     const deployment = await tadata.mcp.deploy({
+   *       spec: source, // Your OpenApiSource object
+   *       specBaseUrl: 'https://api.example.com', // The base URL your API will be proxied to
+   *       name: 'MyFirstMcpDeployment' // An optional descriptive name
+   *     });
+   *     console.log(`Successfully deployed MCP: ${deployment.id} at ${deployment.url}`);
+   *   } catch (error) {
+   *     console.error('MCP deployment failed:', error);
+   *     // Handle specific errors like SpecInvalidError, ApiError, etc.
+   *   }
+   * }
+   * deployMcp();
+   * \`\`\`
    */
   async deploy(input: McpDeployInput): Promise<McpDeploymentResult> {
-    this.logger.info('Deploying MCP server from OpenAPI spec');
+    this.logger.info('Deploying Model Context Protocol (MCP) server from OpenAPI spec');
 
     // Type guard to check for the response structure
     const isDeploymentResponse = (body: unknown): body is DeploymentResponse => {

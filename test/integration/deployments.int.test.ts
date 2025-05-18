@@ -1,7 +1,8 @@
 import { StatusCodes } from 'http-status-codes';
 import * as nock from 'nock';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorCode, OpenApiSource, SpecInvalidError, TadataNodeSDK } from '../../src';
+import { OpenApiSource, SpecInvalidError, TadataNodeSDK } from '../../src';
+import { ErrorCode } from '../../src/http/schemas';
 import { createErrorResponse, createSuccessResponse } from '../utils/response-helpers';
 
 const validOpenApiSpec = {
@@ -24,7 +25,7 @@ const invalidOpenApiSpec = {
 const TEST_API_KEY = 'test_api_key';
 const INVALID_API_KEY = 'invalid_api_key';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://api.tadata.com';
 
 // Force nock to use the same URL construction that axios uses
 // This ensures that the interceptors match the actual requests
@@ -94,7 +95,7 @@ describe('Deployments Integration Test (Nock)', () => {
       const scope = nock(BASE_URL)
         .post('/api/deployments/from-openapi')
         .query(true) // Match any query params
-        .reply(function (uri, requestBody) {
+        .reply(function (uri) {
           // Verify apiKey is in the query as expected
           const url = new URL(`${BASE_URL}${uri}`);
           const apiKey = url.searchParams.get('apiKey');

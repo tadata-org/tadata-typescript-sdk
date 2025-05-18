@@ -1,12 +1,12 @@
 import { initClient } from '@ts-rest/core';
 import axios, { AxiosError } from 'axios';
-import { tadataContract } from './tadata-contract';
-import { AuthError, NetworkError, ApiError } from '../errors';
 import { Logger } from '../core/logger';
+import { ApiError, AuthError, NetworkError } from '../errors';
+import { tadataContract } from './tadata-contract';
 
 interface ClientOptions {
   baseUrl: string;
-  version: string;
+  version: '05-2025' | 'latest';
   timeout?: number;
   logger?: Logger;
   isDev: boolean;
@@ -32,7 +32,7 @@ export function createApiClient(apiKey: string, options: ClientOptions) {
     timeout,
     headers: {
       'Authorization': `Bearer ${apiKey}`,
-      'x-api-version': version,
+      'x-api-version': version as string,
       'Content-Type': 'application/json',
     },
   });
@@ -42,6 +42,8 @@ export function createApiClient(apiKey: string, options: ClientOptions) {
     axiosInstance.interceptors.request.use(
       config => {
         logger.debug(`Making request to ${config.method?.toUpperCase()} ${config.url}`);
+        // Log API version header specifically
+        logger.debug(`Using API version: ${config.headers['x-api-version']}`);
         return config;
       },
       error => {
