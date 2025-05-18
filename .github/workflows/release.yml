@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write          # needed for pushing version commits & creating releases 
+      issues: write            # needed for commenting on issues
+      pull-requests: write     # needed for commenting on PRs
+      id-token: write          # needed for npm provenance
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8        # Specify pnpm version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+          provenance: true
+
+      # Try with --frozen-lockfile first, fallback to regular install if it fails
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - run: pnpm run test
+
+      - run: pnpm run build
+
+      - name: Install semantic-release
+        run: pnpm add -D semantic-release @semantic-release/changelog @semantic-release/git conventional-changelog-conventionalcommits
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+        run: npx semantic-release 

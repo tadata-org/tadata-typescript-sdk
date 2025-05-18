@@ -1,4 +1,4 @@
-import { ErrorCode } from '../../src';
+import { ErrorCode } from '../../src/http/schemas';
 
 /**
  * Helper to create a success response envelope
@@ -55,4 +55,4 @@ export function createErrorResponse(error: {
   }
 
   return response;
-} 
+}

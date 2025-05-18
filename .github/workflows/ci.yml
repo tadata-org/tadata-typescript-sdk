@@ -1,0 +1,82 @@
+name: Continuous Integration / Pull Request
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # -------- pnpm + cache ----------
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8        # Specify pnpm version (adjust to your preferred version)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      # Try with --frozen-lockfile first, fallback to regular install if it fails
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: Run ESLint
+        run: pnpm run lint
+
+  build:
+    name: Build (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # -------- pnpm + cache ----------
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8        # Specify pnpm version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      # Try with --frozen-lockfile first, fallback to regular install if it fails
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: Build SDK
+        run: pnpm run build
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # -------- pnpm + cache ----------
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8        # Specify pnpm version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      # Try with --frozen-lockfile first, fallback to regular install if it fails
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: Run Jest tests
+        run: pnpm run test 
