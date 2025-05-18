@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # -------- pnpm + cache ----------
+      - uses: pnpm/action-setup@v4        # installs pnpm (reads version from package.json if present)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20               # single version is fine for lint
+          cache: 'pnpm'                  # enables automatic pnpm-store caching
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+
+  build:
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x] # stable Node versions
+    steps:
+      - uses: actions/checkout@v4
+
+      # -------- pnpm + cache ----------
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # -------- pnpm + cache ----------
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run test 
