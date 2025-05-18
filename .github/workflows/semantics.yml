@@ -9,17 +9,20 @@ jobs:
   semantics:
     name: Semantics
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+      contents: read
     steps:
-      - uses: 8BitJonny/gh-get-current-pr@2.2.0
-        id: pull-request
-        with:
-          sha: ${{ github.head_ref }}
-
-      - name: Add Commit Lint
-        if: ${{ steps.pull-request.outputs.pr_found == 'true' }}
+      - name: Validate PR Title
         run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "Validating PR title: $PR_TITLE"
+          
+          # Install commitlint
           npm init -y
           npm install --save-dev @commitlint/cli @commitlint/config-angular
+          
+          # Configure commitlint
           echo "module.exports = { \
             extends: ['@commitlint/config-angular'], \
             rules: { \
@@ -30,8 +33,6 @@ jobs:
               'type-enum': [2, 'always', ['chore','feat','fix','refactor']] \
             } \
           };" > commitlint.config.js
-
-      - name: Validate Semantic Title
-        if: ${{ steps.pull-request.outputs.pr_found == 'true' }}
-        run: |
-          echo "${{ steps.pull-request.outputs.pr_title }}" | npx commitlint
+          
+          # Validate title
+          echo "$PR_TITLE" | npx commitlint
