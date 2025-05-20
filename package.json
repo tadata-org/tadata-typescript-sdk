@@ -29,7 +29,6 @@
     "test": "npx jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:manual": "npx ts-node test/manual-test.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
