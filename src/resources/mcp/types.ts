@@ -26,6 +26,34 @@ export interface McpDeployInput {
    * @example "My Customer API Proxy"
    */
   name?: string;
+
+  /**
+   * Optional configuration for handling authentication between the MCP and your API.
+   * Controls which headers, query parameters, and other auth-related data are passed through.
+   * @example { passHeaders: ['authorization', 'x-api-key'], passQueryParams: ['api_key'] }
+   */
+  authConfig?: {
+    /**
+     * List of HTTP headers that should be passed from requests to the MCP through to your API.
+     * @default ['authorization', 'api-key', 'api_key', 'apikey', 'x-api-key', 'x-apikey']
+     */
+    passHeaders?: string[];
+    /**
+     * List of query parameters that should be passed from requests to the MCP through to your API.
+     * @default ['api-key', 'api_key', 'apikey']
+     */
+    passQueryParams?: string[];
+    /**
+     * List of JSON body fields that should be extracted from requests to the MCP and passed to your API.
+     * @default []
+     */
+    passJsonBodyParams?: string[];
+    /**
+     * List of form data fields that should be extracted from requests to the MCP and passed to your API.
+     * @default []
+     */
+    passFormDataParams?: string[];
+  };
 }
 
 /**

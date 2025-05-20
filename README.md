@@ -35,6 +35,12 @@ const deployment = await tadata.mcp.deploy({
   spec: source,
   specBaseUrl: 'https://acme.com/api',
   name: 'Acme API',  // Optional
+  
+  // Optional: Configure authentication handling
+  authConfig: {
+    passHeaders: ['authorization'],  // Specify which headers to pass through. Defaults to ['authorization', 'api-key', 'api_key', 'apikey', 'x-api-key', 'x-apikey']
+    passQueryParams: ['api_key'],  // Specify which query parameters to pass through. Defaults to ['api-key', 'api_key', 'apikey']
+  },
 });
 
 console.log(`Deployed Model Context Protocol (MCP) server: ${deployment.url}`);
