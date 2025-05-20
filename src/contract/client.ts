@@ -40,7 +40,7 @@ export function createApiClient(apiKey: string, options: ClientOptions) {
   if (logger) {
     axiosInstance.interceptors.request.use(
       config => {
-        logger.debug(`Making request to ${config.method?.toUpperCase()} ${config.url}`);
+        logger.debug(`Making request to ${config.method?.toUpperCase()} ${config.baseURL}`);
         // Log API version header specifically
         logger.debug(`Using API version: ${config.headers['x-api-version']}`);
         return config;

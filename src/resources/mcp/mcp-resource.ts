@@ -14,8 +14,6 @@ interface DeploymentSuccessResponse {
     deployment: {
       id: string;
       name: string;
-      url?: string; // URL is optional in the server response
-      specVersion?: string; // specVersion is optional in the server response
       createdAt?: string;
       updatedAt?: string;
     };
@@ -63,7 +61,7 @@ export class McpResource {
    *   try {
    *     const deployment = await tadata.mcp.deploy({
    *       spec: source, // Your OpenApiSource object
-   *       specBaseUrl: 'https://api.example.com', // The base URL your API will be proxied to
+   *       apiBaseUrl: 'https://api.example.com', // The base URL your API will be proxied to
    *       name: 'MyFirstMcpDeployment' // An optional descriptive name
    *     });
    *     console.log(`Successfully deployed MCP: ${deployment.id} at ${deployment.url}`);
@@ -76,7 +74,7 @@ export class McpResource {
    * \`\`\`
    */
   async deploy(input: McpDeployInput): Promise<McpDeploymentResult> {
-    this.logger.info('Deploying Model Context Protocol (MCP) server from OpenAPI spec');
+    this.logger.info('Deploying MCP server from OpenAPI spec');
 
     // Type guard to check for the response structure
     const isDeploymentResponse = (body: unknown): body is DeploymentResponse => {
@@ -96,7 +94,7 @@ export class McpResource {
         body: {
           openApiSpec: openapiSpec,
           name: input.name,
-          baseUrl: input.specBaseUrl,
+          baseUrl: input.apiBaseUrl,
         },
       });
 
@@ -105,10 +103,7 @@ export class McpResource {
 
         return {
           id: deploymentData.id,
-          // Provide a default value for specVersion if undefined
-          specVersion: deploymentData.specVersion || '1.0.0',
-          // Provide a default URL value (required by type) if not returned from server
-          url: deploymentData.url || `http://localhost:3000/mcp/${deploymentData.id}`,
+          updated: response.body.data.updated,
           createdAt: deploymentData.createdAt ? new Date(deploymentData.createdAt) : new Date(),
         };
       }

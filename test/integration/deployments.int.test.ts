@@ -66,8 +66,6 @@ describe('Deployments Integration Test (Nock)', () => {
     it('should successfully deploy an MCP server', async () => {
       const mockDeploymentId = uuidv4();
       const mockCreatedAt = new Date().toISOString();
-      const mockSpecVersionInResponse = '1.0.0'; // Match with validOpenApiSpec.info.version
-      const mockUrl = `/test-deploys/${mockDeploymentId}`;
       const serviceNameInMockedResponse = 'Service Name From Mocked Server Response';
 
       const mockServerResponseData = {
@@ -75,8 +73,7 @@ describe('Deployments Integration Test (Nock)', () => {
         deployment: {
           id: mockDeploymentId,
           name: serviceNameInMockedResponse,
-          url: mockUrl,
-          specVersion: mockSpecVersionInResponse,
+          updated: true,
           createdAt: mockCreatedAt,
           createdBy: 'test-user',
           updatedBy: 'test-user',
@@ -120,13 +117,13 @@ describe('Deployments Integration Test (Nock)', () => {
       const result = await sdk.mcp.deploy({
         spec: source,
         name: requestedDeploymentName,
-        specBaseUrl: 'https://example.com/api',
+        apiBaseUrl: 'https://example.com/api',
       });
 
       // Validate expected response structure
       expect(result).toBeDefined();
       expect(result.id).toBe(mockDeploymentId);
-      expect(result.specVersion).toBe(mockSpecVersionInResponse);
+      expect(result.updated).toBe(true);
       expect(result.createdAt).toBeInstanceOf(Date);
       expect(Date.now() - result.createdAt.getTime()).toBeLessThan(60000);
 

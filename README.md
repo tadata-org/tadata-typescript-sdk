@@ -22,7 +22,6 @@ import { Tadata, OpenApiSource, ApiVersion } from '@tadata/node-sdk';
 // Initialize the SDK
 const tadata = new Tadata({
   apiKey: process.env.TADATA_KEY!,
-  dev: process.env.NODE_ENV !== 'production',
   version: ApiVersion.V_05_2025,  // Optional: specify API version
   logger: pino(),         // Optional: use custom logger
 });
@@ -33,7 +32,7 @@ const source = await OpenApiSource.fromFile('./acme-openapi.json');
 // Deploy the MCP server
 const deployment = await tadata.mcp.deploy({
   spec: source,
-  specBaseUrl: 'https://acme.com/api',
+  apiBaseUrl: 'https://acme.com/api',
   name: 'Acme API',  // Optional
   
   // Optional: Configure authentication handling
