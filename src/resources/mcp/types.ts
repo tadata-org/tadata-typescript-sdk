@@ -18,7 +18,7 @@ export interface McpDeployInput {
    * This is the actual endpoint where your backend service is running.
    * @example "https://api.example.com/v1"
    */
-  specBaseUrl?: string;
+  apiBaseUrl?: string;
 
   /**
    * An optional descriptive name for this MCP deployment.
@@ -69,15 +69,10 @@ export interface McpDeploymentResult {
   id: string;
 
   /**
-   * The URL at which the deployed MCP instance is accessible.
+   * Whether the MCP server was updated or not.
+   * Normally this will be `false` if the spec has not changed, and `true` if the spec has changed.
    */
-  url: string;
-
-  /**
-   * The version of the OpenAPI specification used for this deployment.
-   * This typically corresponds to the `version` field in your OpenAPI document's `info` object.
-   */
-  specVersion: string;
+  updated: boolean;
 
   /**
    * The date and time when this MCP instance was created.

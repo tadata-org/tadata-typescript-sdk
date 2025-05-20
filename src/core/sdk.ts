@@ -50,7 +50,6 @@ export interface TadataOptions {
  *
  * const tadata = new Tadata({
  *   apiKey: process.env.TADATA_KEY!,
- *   dev: process.env.NODE_ENV !== 'production',
  *   version: ApiVersion.V_05_2025, // Optional: Defaults to ApiVersion.LATEST
  *   // logger: pino(),             // Optional: Provide a custom logger
  * });
@@ -60,7 +59,7 @@ export interface TadataOptions {
  *   // const source = await OpenApiSource.fromFile('./my-api-spec.json');
  *   // const deployment = await tadata.mcp.deploy({
  *   //   spec: source,
- *   //   specBaseUrl: 'https://api.example.com',
+ *   //   apiBaseUrl: 'https://api.example.com',
  *   //   name: 'My API Proxy'
  *   // });
  *   // console.log('Deployment URL:', deployment.url);
