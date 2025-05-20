@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 import * as nock from 'nock';
 import { v4 as uuidv4 } from 'uuid';
-import { OpenApiSource, SpecInvalidError, TadataNodeSDK } from '../../src';
+import { OpenApiSource, SpecInvalidError, Tadata } from '../../src';
 import { ErrorCode } from '../../src/http/schemas';
 import { createErrorResponse, createSuccessResponse } from '../utils/response-helpers';
 
@@ -32,11 +32,11 @@ const BASE_URL = 'https://api.tadata.com';
 nock.enableNetConnect('127.0.0.1'); // Allow localhost connections for CI/CD if needed
 
 describe('Deployments Integration Test (Nock)', () => {
-  const sdk = new TadataNodeSDK({
+  const sdk = new Tadata({
     apiKey: TEST_API_KEY,
   });
 
-  const invalidSdk = new TadataNodeSDK({
+  const invalidSdk = new Tadata({
     apiKey: INVALID_API_KEY,
   });
 

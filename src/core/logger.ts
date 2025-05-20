@@ -2,7 +2,7 @@
  * Logger interface for the SDK.
  * Consumers of the SDK can implement this interface to provide a custom logging
  * solution (e.g., to integrate with their existing logging infrastructure like Pino or Winston).
- * If no logger is provided to `TadataNodeSDK`, a default `ConsoleLogger` will be used.
+ * If no logger is provided to `Tadata`, a default `ConsoleLogger` will be used.
  *
  * @since 0.1.0
  */

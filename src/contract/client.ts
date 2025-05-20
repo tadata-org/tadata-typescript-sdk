@@ -31,7 +31,6 @@ export function createApiClient(apiKey: string, options: ClientOptions) {
     baseURL: baseUrl,
     timeout,
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
       'x-api-version': version as string,
       'Content-Type': 'application/json',
     },
@@ -94,7 +93,6 @@ export function createApiClient(apiKey: string, options: ClientOptions) {
   return initClient(tadataContract, {
     baseUrl,
     baseHeaders: {
-      'Authorization': `Bearer ${apiKey}`,
       'x-api-version': version,
     },
 

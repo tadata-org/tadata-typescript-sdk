@@ -17,10 +17,10 @@ pnpm add @tadata/node-sdk
 Deploy a Model Context Protocol (MCP) server with your OpenAPI specification:
 
 ```typescript
-import { TadataNodeSDK, OpenApiSource, ApiVersion } from '@tadata/node-sdk';
+import { Tadata, OpenApiSource, ApiVersion } from '@tadata/node-sdk';
 
 // Initialize the SDK
-const tadata = new TadataNodeSDK({
+const tadata = new Tadata({
   apiKey: process.env.TADATA_KEY!,
   dev: process.env.NODE_ENV !== 'production',
   version: ApiVersion.V_05_2025,  // Optional: specify API version
@@ -89,12 +89,12 @@ You can provide your own logger implementation:
 
 ```typescript
 import pino from 'pino';
-import { TadataNodeSDK, Logger } from '@tadata/node-sdk';
+import { Tadata, Logger } from '@tadata/node-sdk';
 
 // Use pino
 const pinoLogger = pino();
 
-const tadata = new TadataNodeSDK({
+const tadata = new Tadata({
   apiKey: 'your-api-key',
   logger: pinoLogger,
 });

@@ -57,7 +57,7 @@ export class McpResource {
    * @throws {NetworkError} If a network issue prevents communication with the Tadata API.
    * @example
    * \`\`\`typescript
-   * // Assuming 'tadata' is an initialized TadataNodeSDK instance
+   * // Assuming 'tadata' is an initialized Tadata instance
    * // and 'source' is an OpenApiSource instance
    * async function deployMcp() {
    *   try {

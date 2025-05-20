@@ -8,7 +8,7 @@
  * @since 0.1.0
  */
 // Export the main SDK class and its options
-export { TadataNodeSDK } from './core/sdk';
+export { Tadata } from './core/sdk';
 export type { TadataOptions } from './core/sdk';
 
 // Logger interface (optional for consumers to type their own loggers)

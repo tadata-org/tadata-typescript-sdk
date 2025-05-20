@@ -44,11 +44,11 @@ export interface TadataOptions {
  * @since 0.1.0
  * @example
  * \`\`\`typescript
- * import { TadataNodeSDK, ApiVersion } from '@tadata/node-sdk';
+ * import { Tadata, ApiVersion } from '@tadata/node-sdk';
  * // Assumes pino is installed for custom logging, otherwise default logger is used.
  * // import pino from 'pino';
  *
- * const tadata = new TadataNodeSDK({
+ * const tadata = new Tadata({
  *   apiKey: process.env.TADATA_KEY!,
  *   dev: process.env.NODE_ENV !== 'production',
  *   version: ApiVersion.V_05_2025, // Optional: Defaults to ApiVersion.LATEST
@@ -69,7 +69,7 @@ export interface TadataOptions {
  * main().catch(console.error);
  * \`\`\`
  */
-export class TadataNodeSDK {
+export class Tadata {
   /**
    * Access to Model Context Protocol (MCP) functionalities.
    * Use this resource to deploy and manage your Model Context Protocol instances.
@@ -78,7 +78,7 @@ export class TadataNodeSDK {
   public readonly mcp: McpResource;
 
   /**
-   * Creates a new instance of the TadataNodeSDK.
+   * Creates a new instance of the Tadata.
    *
    * @param options Configuration options for the SDK. See {@link TadataOptions}.
    */

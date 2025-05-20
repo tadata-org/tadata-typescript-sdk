@@ -15,6 +15,15 @@ export const DeploymentResponseMinSchema = z.object({
   status: z.string(),
 });
 
+export const MCPAuthConfigSchema = z.object({
+  passHeaders: z
+    .array(z.string())
+    .default(['authorization', 'api-key', 'api_key', 'apikey', 'x-api-key', 'x-apikey']),
+  passQueryParams: z.array(z.string()).default(['api-key', 'api_key', 'apikey']),
+  passJsonBodyParams: z.array(z.string()).default([]),
+  passFormDataParams: z.array(z.string()).default([]),
+});
+
 // Define a Zod schema for OpenAPI 3.0 with basic validation
 export const OpenApi3Schema = z
   .object({
@@ -33,6 +42,7 @@ export const UpsertDeploymentBodySchema = z.object({
   openApiSpec: OpenApi3Schema,
   name: z.string().optional(),
   baseUrl: z.string().optional(),
+  authConfig: MCPAuthConfigSchema.optional().default(() => MCPAuthConfigSchema.parse({})),
 });
 
 // Original unwrapped response schema
