@@ -1,6 +1,6 @@
 {
-  "name": "@tadata-org/sdk",
-  "version": "0.1.0",
+  "name": "@tadata-js/sdk",
+  "version": "0.1.1",
   "description": "Tadata Node SDK",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",

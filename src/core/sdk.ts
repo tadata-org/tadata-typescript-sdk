@@ -44,7 +44,7 @@ export interface TadataOptions {
  * @since 0.1.0
  * @example
  * \`\`\`typescript
- * import { Tadata, ApiVersion } from '@tadata/node-sdk';
+ * import { Tadata, ApiVersion } from '@tadata-js/sdk';
  * // Assumes pino is installed for custom logging, otherwise default logger is used.
  * // import pino from 'pino';
  *

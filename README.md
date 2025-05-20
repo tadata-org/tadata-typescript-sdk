@@ -5,11 +5,11 @@ A Node.js SDK for deploying Model Context Protocol (MCP) servers with your OpenA
 ## Installation
 
 ```bash
-npm install @tadata/node-sdk
+npm install @tadata-js/sdk
 # or
-yarn add @tadata/node-sdk
+yarn add @tadata-js/sdk
 # or
-pnpm add @tadata/node-sdk
+pnpm add @tadata-js/sdk
 ```
 
 ## Quickstart
@@ -17,7 +17,7 @@ pnpm add @tadata/node-sdk
 Deploy a Model Context Protocol (MCP) server with your OpenAPI specification:
 
 ```typescript
-import { Tadata, OpenApiSource, ApiVersion } from '@tadata/node-sdk';
+import { Tadata, OpenApiSource, ApiVersion } from '@tadata-js/sdk';
 
 // Initialize the SDK
 const tadata = new Tadata({
@@ -69,7 +69,7 @@ const source = OpenApiSource.fromObject({
 The SDK provides specific error classes for better error handling:
 
 ```typescript
-import { SpecInvalidError, AuthError, ApiError, NetworkError } from '@tadata/node-sdk';
+import { SpecInvalidError, AuthError, ApiError, NetworkError } from '@tadata-js/sdk';
 
 try {
   await tadata.mcp.deploy({ /* ... */ });
@@ -94,7 +94,7 @@ You can provide your own logger implementation:
 
 ```typescript
 import pino from 'pino';
-import { Tadata, Logger } from '@tadata/node-sdk';
+import { Tadata, Logger } from '@tadata-js/sdk';
 
 // Use pino
 const pinoLogger = pino();
