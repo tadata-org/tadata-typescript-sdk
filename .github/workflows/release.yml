@@ -30,7 +30,6 @@ jobs:
           node-version: 20
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
-          provenance: true
 
       # Try with --frozen-lockfile first, fallback to regular install if it fails
       - name: Install dependencies
