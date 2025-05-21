@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import * as nock from 'nock';
+import nock from 'nock';
 import { v4 as uuidv4 } from 'uuid';
 import { OpenApiSource, SpecInvalidError, Tadata } from '../../src';
 import { ErrorCode } from '../../src/http/schemas';
