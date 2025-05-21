@@ -4,7 +4,7 @@
     "lib": ["es2020"],
     "strict": true,
     "declaration": true,
-    "esModuleInterop": false,
+    "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
